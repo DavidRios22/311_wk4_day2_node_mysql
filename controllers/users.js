@@ -1,18 +1,17 @@
 const mysql = require("mysql")
 const pool = require("../sql/connection")
-const { handleSQLError } = require("../sql/error")
 
 const getAllUsers = (req, res) => {
   let sql = "select * from users u "
   sql += "join usersAddress ua on u.id = ua.user_id "
   sql += "join usersContact uc on u.id = uc.user_id"
 
-  pool.query(sql, (err, rows) => {
+  pool.query(sql, (err, results) => {
     if (err) {
       console.log("ERROR DESCRIPTION", err)
       res.sendStatus(500)
     } else {
-      res.json(rows)
+      res.json(results)
     }
   })
 }
@@ -26,12 +25,12 @@ const getUserById = (req, res) => {
   sql += "join usersContact uc on u.id = uc.user_id "
   sql += "and u.id = ?"
 
-  pool.query(sql, params, (err, rows) => {
+  pool.query(sql, params, (err, results) => {
     if (err) {
       console.log("getUserById query failed ", err)
       res.sendStatus(400)
     } else {
-      res.json(rows)
+      res.json(results)
     }
   })
 }
@@ -44,20 +43,20 @@ const createUserCallbackHell = (req, res) => {
 
   let params = [first, last]
 
-  pool.query(sql, params, (err, rows) => {
+  pool.query(sql, params, (err, results) => {
     if (err) {
       console.log("createUser query failed ", err)
       res.sendStatus(500)
     } else {
       sql =
         "select max(id) as id from users where first_name = ? and last_name = ?"
-      pool.query(sql, params, (err, rows) => {
+      pool.query(sql, params, (err, results) => {
         if (err) {
           console.log("createUser query failed ", err)
           res.sendStatus(500)
         } else {
-          // res.json(rows)
-          let id = rows[0].id
+          // res.json(results)
+          let id = results[0].id
           let address = req.body.address
           let city = req.body.city
           let county = req.body.county
@@ -68,12 +67,12 @@ const createUserCallbackHell = (req, res) => {
 
           sql =
             "insert into usersAddress (user_id, address, city, county, state, zip) values (?, ?, ?, ?, ?, ?)"
-          pool.query(sql, params, (err, rows) => {
+          pool.query(sql, params, (err, results) => {
             if (err) {
               console.log("createUser query failed ", err)
               res.sendStatus(500)
             } else {
-              // res.json(rows)
+              // res.json(results)
               let phone1 = req.body.phone1
               let phone2 = req.body.phone2
               let email = req.body.email
@@ -82,7 +81,7 @@ const createUserCallbackHell = (req, res) => {
               sql =
                 "insert into usersContact (user_id, phone1, phone2, email) values (?, ?, ?, ?)"
 
-              pool.query(sql, params, (err, rows) => {
+              pool.query(sql, params, (err, results) => {
                 if (err) {
                   console.log("createUser query failed ", err)
                   res.sendStatus(500)
@@ -167,7 +166,7 @@ const updateUserById = (req, res) => {
       console.log("getAllUsers query failed ", err)
       res.sendStatus(400)
     } else {
-      res.json(rows)
+      res.json(results)
     }
   })
 }
@@ -178,12 +177,12 @@ const deleteUserByFirstName = (req, res) => {
 
   let sql = "delete from users where first_name = ?"
 
-  pool.query(sql, params, (err, rows) => {
+  pool.query(sql, params, (err, results) => {
     if (err) {
       console.log("deleteUserByFirstName query failed ", err)
       res.sendStatus(400)
     } else {
-      res.json({ message: `Deleted ${rows.affectedRows} user(s)` })
+      res.json({ message: `Deleted ${results.affectedResults} user(s)` })
     }
   })
 }
