@@ -70,7 +70,7 @@ let login = (req, res) => {
           }
           let signedToken = jwt.sign(token, process.env.JWT_SECRET)
 
-          res.setHeader("Authorization", "Bearer", signedToken)
+          // res.setHeader("Authorization", "Bearer", signedToken)
 
           res.sendStatus(200)
         } else {
